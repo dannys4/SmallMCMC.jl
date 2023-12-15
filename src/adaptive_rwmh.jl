@@ -16,8 +16,19 @@ function reset!(mcmc::MCMC_Adaptive_RWMH)
     mcmc.cov_unc .= 0
 end
 
-"""Constructor for the adaptive MCMC sampler.
-Needs log density and initial covariance"""
+"""
+Constructor for the adaptive MCMC sampler
+    
+    MCMC_Adaptive_RWMH(log_p, C_0; n_0, n_stop_adapt, s_d, eps)
+
+Arguments:
+
+    log_p(x,p): log target density R^n->R sampled from with argument x and parameter p
+    C_0: Initial covariance, R^{n x n}
+    n_0: When to start using adaptive covariance matrix (default 1000)
+    n_stop_adapt: When to stop using adaptive covariance matrix (default 10,000)
+    s_d, eps: scaling, inflation factors in adaptive MCMC (see Haario et al)
+"""
 function MCMC_Adaptive_RWMH(log_p::T, C_0; s_d=2.4^2/size(C_0,2), eps=0.001, n_0=1000, n_stop_adapt=10_000) where {T}
     M,N = size(C_0)
     @assert M == N "C_0 must be square"

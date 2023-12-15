@@ -1,9 +1,11 @@
 
 """
 Compute an MCMC chain of length `n` using the `mcmc` algorithm, starting at `x0`
+
     MetropolisHastings(mcmc::AbstractMCMC_Alg, x0, n_samples, p; verbose, rng)
 
 Arguments:
+
     mcmc: Algorithm set up to sample
     x0: Initial sample
     n: Length of chain
@@ -12,6 +14,7 @@ Arguments:
     rng: Random number generator (from Random)
 
 Returns:
+
     chain: Chain of `n+1` samples (including x0)
 """
 function mcmc_sample(mcmc::AbstractMCMC_SymMH, x0::Vector{Float64}, n::Int, p = nothing; verbose = true, rng::AbstractRNG = Random.GLOBAL_RNG)
