@@ -2,14 +2,14 @@
 """
 Compute an MCMC chain of length `n` using the `mcmc` algorithm, starting at `x0`
 
-    MetropolisHastings(mcmc::AbstractMCMC_Alg, x0, n_samples, p; verbose, rng)
+    mcmc_sample(mcmc::AbstractMCMC_Alg, x0, n_samples, p; verbose, rng)
 
 Arguments:
 
     mcmc: Algorithm set up to sample
     x0: Initial sample
     n: Length of chain
-    p: Parameters for `mcmc` to calculate log likelihood and sample from proposal
+    p: Parameters for `mcmc` to calculate log likelihood and sample from proposal (default nothing)
     verbose: Include progress bar
     rng: Random number generator (from Random)
 
@@ -21,7 +21,7 @@ function mcmc_sample(mcmc::AbstractMCMC_SymMH, x0::Vector{Float64}, n::Int, p = 
     x = x0
     chain = Matrix{Float64}(undef, length(x0), n+1)
     chain[:,1] = x0
-    prog = Progress(n, 1, "Computing MCMC Chain...", enabled = verbose)
+    verbose && (prog = Progress(n, 1, "Computing MCMC Chain..."))
     for i in 1:n
         y = samp_proposal(rng, mcmc, x, p)
         l_alpha = log_alpha(mcmc, x, y, p)
@@ -30,7 +30,7 @@ function mcmc_sample(mcmc::AbstractMCMC_SymMH, x0::Vector{Float64}, n::Int, p = 
         end
         chain[:,i+1] .= x
         update!(mcmc, i, x)
-        next!(prog)
+        verbose && next!(prog)
     end
     chain
 end
@@ -43,7 +43,7 @@ function mcmc_sample(mcmcs::MCMC_Componentwise_t, x0::Vector{Float64}, n::Int, p
     slices = [0; cumsum(mcmcs.ds)]
     d = length(mcmcs.ds)
     chain[:,1] = x0
-    prog = Progress(n, 1, "Computing MCMC Chain...", enabled = verbose)
+    verbose && (prog = Progress(n, 1, "Computing MCMC Chain..."))
     for i in 1:n
         for j in 1:d
             mcmc = mcmcs.mcmcs[j]
@@ -59,7 +59,7 @@ function mcmc_sample(mcmcs::MCMC_Componentwise_t, x0::Vector{Float64}, n::Int, p
             update!(mcmc, i, x_view)
         end
         chain[:,i+1] .= x
-        next!(prog)
+        verbose && next!(prog)
     end
     chain
 end
