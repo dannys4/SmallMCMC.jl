@@ -17,7 +17,7 @@ struct MCMC_MH{D,T} <: AbstractMCMC_SymMH where {D<:Distribution, T}
 end
 
 update!(_::MCMC_MH,_::Int,_) = nothing
-samp_proposal(mcmc::MCMC_MH, _, _, rng::AbstractRNG) = rand(rng,mcmc.g)
+samp_proposal(rng::AbstractRNG, mcmc::MCMC_MH, _, _) = rand(rng,mcmc.g)
 
 struct MCMC_Global{T}
     g::T
@@ -27,7 +27,7 @@ struct MCMC_Global{T}
 end
 
 update!(_::MCMC_Global, _::Int, _) = nothing
-samp_proposal(mcmc::MCMC_Global, _, p, rng::AbstractRNG) = rand(rng, mcmc.g(p))
+samp_proposal(rng::AbstractRNG, mcmc::MCMC_Global, _, p) = rand(rng, mcmc.g(p))
 log_alpha(mcmc::MCMC_Global, _, _, _) = 0.
 
 struct MCMC_Componentwise_t
